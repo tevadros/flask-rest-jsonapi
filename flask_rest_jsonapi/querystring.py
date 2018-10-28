@@ -12,9 +12,8 @@ from flask_rest_jsonapi.schema import get_model_field, get_relationships, get_sc
 
 class QueryStringManager(object):
     """Querystring parser according to jsonapi reference"""
-
     MANAGED_KEYS = (
-        'filter',
+        'filters',
         'page',
         'fields',
         'sort',
@@ -74,12 +73,25 @@ class QueryStringManager(object):
 
         :return list: filter information
         """
-        filters = self.qs.get('filter')
-        if filters is not None:
-            try:
-                filters = json.loads(filters)
-            except (ValueError, TypeError):
-                raise InvalidFilters("Parse error")
+        filters = []
+        query_dict = self._get_key_values('filters')
+
+        for item in current_app.config.get('filters_map', []):
+            filter_value = query_dict.get(item['key'], None)
+            if filter_value is not None:
+                if type(filter_value) is not list:
+                    filter_value = [filter_value]
+                temp_filters = []
+                for val in filter_value:
+                    temp_filters.append({'name': item['real_key'], 'op': item.get('op', 'eq'), 'val': val})
+                    pass
+
+                if item.get('bool_op', False):
+                    filters.append({item['bool_op']: temp_filters})
+                else:
+                    filters = filters + temp_filters
+                pass
+            pass
 
         return filters
 
