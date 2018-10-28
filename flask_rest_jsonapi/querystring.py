@@ -105,20 +105,20 @@ class QueryStringManager(object):
         # check values type
         result = self._get_key_values('page')
         for key, value in result.items():
-            if key not in ('number', 'size'):
+            if key not in ('offset', 'limit'):
                 raise BadRequest("{} is not a valid parameter of pagination".format(key), source={'parameter': 'page'})
             try:
                 int(value)
             except ValueError:
                 raise BadRequest("Parse error", source={'parameter': 'page[{}]'.format(key)})
 
-        if current_app.config.get('ALLOW_DISABLE_PAGINATION', True) is False and int(result.get('size', 1)) == 0:
-            raise BadRequest("You are not allowed to disable pagination", source={'parameter': 'page[size]'})
+        if current_app.config.get('ALLOW_DISABLE_PAGINATION', True) is False and int(result.get('limit', 1)) == 0:
+            raise BadRequest("You are not allowed to disable pagination", source={'parameter': 'page[limit]'})
 
-        if current_app.config.get('MAX_PAGE_SIZE') is not None and 'size' in result:
-            if int(result['size']) > current_app.config['MAX_PAGE_SIZE']:
+        if current_app.config.get('MAX_PAGE_SIZE') is not None and 'limit' in result:
+            if int(result['limit']) > current_app.config['MAX_PAGE_SIZE']:
                 raise BadRequest("Maximum page size is {}".format(current_app.config['MAX_PAGE_SIZE']),
-                                 source={'parameter': 'page[size]'})
+                                 source={'parameter': 'page[limit]'})
 
         return result
 

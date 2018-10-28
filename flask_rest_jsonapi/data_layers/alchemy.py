@@ -462,13 +462,13 @@ class SqlalchemyDataLayer(BaseDataLayer):
         :param dict paginate_info: pagination information
         :return Query: the paginated query
         """
-        if int(paginate_info.get('size', 1)) == 0:
+        if int(paginate_info.get('limit', 1)) == 0:
             return query
 
-        page_size = int(paginate_info.get('size', 0)) or current_app.config['PAGE_SIZE']
+        page_size = int(paginate_info.get('limit', 0)) or current_app.config['PAGE_SIZE']
         query = query.limit(page_size)
-        if paginate_info.get('number'):
-            query = query.offset((int(paginate_info['number']) - 1) * page_size)
+        if paginate_info.get('offset'):
+            query = query.offset(int(paginate_info['offset']))
 
         return query
 
