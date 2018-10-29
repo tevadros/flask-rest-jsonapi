@@ -174,9 +174,15 @@ class QueryStringManager(object):
             ]
 
         """
-        if self.qs.get('sort'):
+        sort_string = self.qs.get('sort', False)
+        if not sort_string:
+            default_sort = current_app.config.get('default_sort', False)
+            if default_sort and default_sort.get(self.schema.opts.type_, False):
+                sort_string = default_sort[self.schema.opts.type_]
+
+        if sort_string:
             sorting_results = []
-            for sort_field in self.qs['sort'].split(','):
+            for sort_field in sort_string.split(','):
                 field = sort_field.replace('-', '')
                 if field not in self.schema._declared_fields:
                     raise InvalidSort("{} has no attribute {}".format(self.schema.__name__, field))
