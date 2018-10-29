@@ -4,7 +4,6 @@
 
 from __future__ import division
 from six.moves.urllib.parse import urlencode
-from math import ceil
 from copy import copy
 
 from flask import current_app

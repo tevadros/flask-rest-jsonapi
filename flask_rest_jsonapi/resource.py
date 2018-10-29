@@ -100,6 +100,8 @@ class Resource(MethodView):
         if not isinstance(response, tuple):
             if isinstance(response, dict):
                 response.update({'jsonapi': {'version': '1.0'}})
+                if 'meta' not in response:
+                    response['meta'] = {'fake': 'meta'}
             return make_response(jsonify(response), 200, headers)
 
         try:
@@ -115,6 +117,8 @@ class Resource(MethodView):
 
         if isinstance(data, dict):
             data.update({'jsonapi': {'version': '1.0'}})
+            if 'meta' not in data:
+                data['meta'] = {'fake': 'meta'}
 
         return make_response(jsonify(data), status_code, headers)
 
